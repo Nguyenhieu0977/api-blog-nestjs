@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, ParseArrayPipe, Post, Put, Query, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -44,6 +44,12 @@ export class UserController {
         return this.userService.update(Number(id), updateUserDto);
     }
 
+    @Delete('multiple')
+    multipleDelete(@Query('ids', new ParseArrayPipe({ items: String, separator: ',' })) ids: string[]) {
+        console.log("delete multi=> ", ids)
+        return this.userService.multipleDelete(ids)
+    }
+
     @UseGuards(AuthGuard)
     @Delete(':id')
     delete(@Param('id') id: string) {
@@ -62,7 +68,7 @@ export class UserController {
                 cb(null, false);
             } else {
                 const fileSize = parseInt(req.headers['content-length']);
-                if (fileSize > 1024 *1024*5) {
+                if (fileSize > 1024 * 1024 * 5) {
                     req.fileValidationError = 'File size is too large. Accepted file size is less than 5 MB';
                     cb(null, false);
                 } else {
@@ -76,10 +82,10 @@ export class UserController {
         console.log('user data', req.user_data)
         console.log(file);
 
-        if(req.fileValidationError){
+        if (req.fileValidationError) {
             throw new BadRequestException(req.fileValidationError);
         }
-        if(!file){
+        if (!file) {
             throw new BadRequestException('File is required')
         }
         return this.userService.updateAvatar(req.user_data.id, file.destination + '/' + file.filename);
