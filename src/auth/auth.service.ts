@@ -29,11 +29,11 @@ export class AuthService {
             }
         )
         if (!user) {
-            throw new HttpException("Email is not exist", HttpStatus.UNAUTHORIZED);
+            throw new HttpException("Email không tồn tại", HttpStatus.UNAUTHORIZED);
         }
         const checkPass = bcrypt.compareSync(loginUserDto.password, user.password);
         if (!checkPass) {
-            throw new HttpException('Password is not correct', HttpStatus.UNAUTHORIZED);
+            throw new HttpException('Mật khẩu không đúng', HttpStatus.UNAUTHORIZED);
         }
         //generate access token and refresh token 
         const payload = { id: user.id, email: user.email };

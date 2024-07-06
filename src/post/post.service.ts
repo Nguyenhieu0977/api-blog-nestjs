@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { Post } from './entities/post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Like, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, In, Like, Repository, UpdateResult } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { FilterPostDto } from './dto/filter-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -111,5 +111,9 @@ export class PostService {
 
     async delete(id: number): Promise<DeleteResult> {
         return await this.postRepository.delete(id);
+    }
+
+    async multipleDelete(ids: string[]): Promise<DeleteResult> {
+        return await this.postRepository.delete({ id: In(ids) })
     }
 }

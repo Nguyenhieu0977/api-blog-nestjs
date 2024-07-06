@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Post, Get, Query, Req, UploadedFile, UseGuards, UseInterceptors, Param, Put, Delete, UsePipes, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post, Get, Query, Req, UploadedFile, UseGuards, UseInterceptors, Param, Put, Delete, UsePipes, ValidationPipe, ParseArrayPipe } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { storageConfig } from 'helpers/config';
@@ -35,6 +35,7 @@ export class PostController {
             }
         }
     }))
+    @UseGuards(AuthGuard)
     create(@Req() req: any, @Body() createPostDto: CreatePostDto, @UploadedFile() file: Express.Multer.File) {
         console.log(req['user_data']);
         console.log(createPostDto);
@@ -46,16 +47,17 @@ export class PostController {
             throw new BadRequestException('File is required')
         }
 
-        return this.postService.create(req['user_data'].id, { ...createPostDto, thumbnail: file.destination + '/' + file.filename });
+        return this.postService.create(req['user_data'].id, { ...createPostDto, thumbnail: 'post/' + file.filename });
+        // return this.userService.updateAvatar(req.user_data.id, file.fieldname + '/' + file.filename);
     }
 
-    @UseGuards(AuthGuard)
+    // @UseGuards(AuthGuard)
     @Get()
     findAll(@Query() query: FilterPostDto): Promise<any> {
         return this.postService.findAll(query);
     }
 
-    @UseGuards(AuthGuard)
+    // @UseGuards(AuthGuard)
     @Get(':id')
     findDetail(@Param('id') id: string): Promise<PostEntity> {
         return this.postService.findDetail(Number(id));
@@ -88,7 +90,7 @@ export class PostController {
         }
 
         if (file) {
-            updatePostDto.thumbnail = file.destination + '/' + file.filename;
+            updatePostDto.thumbnail = 'post/' + file.filename;
         }
 
         return this.postService.update(Number(id), updatePostDto)
@@ -98,5 +100,40 @@ export class PostController {
     @Delete(':id')
     delete(@Param('id') id: string) {
         return this.postService.delete(Number(id))
+    }
+
+    @Delete('multiple')
+    multipleDelete(@Query('ids', new ParseArrayPipe({ items: String, separator: ',' })) ids: string[]) {
+        console.log("delete multi=> ", ids)
+        return this.postService.multipleDelete(ids)
+    }
+
+
+    @Post('cke-upload')
+    @UseInterceptors(FileInterceptor('upload', {
+        storage: storageConfig('ckeditor'),
+        fileFilter: (req, file, cb) => {
+            const ext = extname(file.originalname);
+            const allowedExtArr = ['.jpg', '.png', '.jpeg'];
+            if (!allowedExtArr.includes(ext)) {
+                req.fileValidationError = `Wrong extension type. Accepted file ext are: ${allowedExtArr.toString()}`;
+                cb(null, false);
+            } else {
+                const fileSize = parseInt(req.headers['content-length']);
+                if (fileSize > 1024 * 1024 * 5) {
+                    req.fileValidationError = 'File size is too large. Accepted file size is less than 5 MB';
+                    cb(null, false);
+                } else {
+                    cb(null, true);
+                }
+            }
+        }
+    }))
+    ckeUpload(@Body() data: any, @UploadedFile() file: Express.Multer.File) {
+        console.log('data=>', data);
+        console.log(file);
+       return{
+        'url': `ckeditor/${file.filename}`
+       }
     }
 }

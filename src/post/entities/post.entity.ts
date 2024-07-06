@@ -1,3 +1,4 @@
+import { Type } from "class-transformer";
 import { Category } from "src/category/entities/category.entity";
 import { User } from "src/user/entities/user.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
@@ -11,6 +12,9 @@ export class Post {
     title: string;
 
     @Column()
+    summary: string;
+
+    @Column({type: 'longtext'})
     description: string;
 
     @Column()

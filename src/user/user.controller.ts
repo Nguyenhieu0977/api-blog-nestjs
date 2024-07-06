@@ -26,6 +26,12 @@ export class UserController {
         return this.userService.findAll(query);
     }
 
+    @Get('profile')
+    @UseGuards(AuthGuard)
+    profile(@Req() req: any):Promise<User>{
+        return this.userService.findOne(Number(req.user_data.id))
+    }
+
     @UseGuards(AuthGuard)
     @Get(':id')
     findOne(@Param('id') id: string): Promise<User> {
@@ -55,6 +61,7 @@ export class UserController {
     delete(@Param('id') id: string) {
         return this.userService.delete(Number(id));
     }
+
 
     @Post('upload-avatar')
     @UseGuards(AuthGuard)
@@ -88,6 +95,6 @@ export class UserController {
         if (!file) {
             throw new BadRequestException('File is required')
         }
-        return this.userService.updateAvatar(req.user_data.id, file.destination + '/' + file.filename);
+        return this.userService.updateAvatar(req.user_data.id, file.fieldname + '/' + file.filename);
     }
 }
