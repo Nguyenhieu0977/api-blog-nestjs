@@ -1,3 +1,4 @@
+import { Video } from 'src/video/entities/video.entity';
 import { Post } from 'src/post/entities/post.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from 'typeorm';
 
@@ -35,4 +36,7 @@ export class User {
 
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[]
+
+  @OneToMany(() => Video, (video) => video.user)
+  videos: Video[]
 }

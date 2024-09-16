@@ -49,7 +49,7 @@ export class UserController {
     update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
         return this.userService.update(Number(id), updateUserDto);
     }
-
+    @UseGuards(AuthGuard)
     @Delete('multiple')
     multipleDelete(@Query('ids', new ParseArrayPipe({ items: String, separator: ',' })) ids: string[]) {
         console.log("delete multi=> ", ids)

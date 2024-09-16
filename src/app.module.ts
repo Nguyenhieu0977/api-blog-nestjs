@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { PostModule } from './post/post.module';
 import { CategoryModule } from './category/category.module';
+import { VideoModule } from './video/video.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot(dataSourceOptions),
@@ -15,7 +16,8 @@ import { CategoryModule } from './category/category.module';
     AuthModule,
     ConfigModule.forRoot(),
     PostModule,
-    CategoryModule
+    CategoryModule,
+    VideoModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -4,11 +4,24 @@ import { CategoryService } from './category.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { ApiQuery } from '@nestjs/swagger';
+import { FilterCategoryDto } from './dto/filter-category.dto';
 
 @Controller('categories')
 export class CategoryController {
 
     constructor(private categoryService:CategoryService){}
+
+
+    // @UseGuards(AuthGuard)
+    // @ApiQuery({ name: 'page' })
+    // @ApiQuery({ name: 'items_per_page' })
+    // @ApiQuery({ name: 'search' })
+    // @Get()
+    // findAll(@Query() query: FilterCategoryDto): Promise<Category[]> {
+    //     console.log(query);
+    //     return this.categoryService.findAll(query);
+    // }
 
     @Get()
     findAll():Promise<Category[]> {
@@ -16,9 +29,15 @@ export class CategoryController {
     }
 
     // @UseGuards(AuthGuard)
-    @Get(':id')
-    findOne(@Param('id') id: string): Promise<Category> {
-        return this.categoryService.findOne(Number(id));
+    @Get('anc/:id')
+    findOneAnc(@Param('id') id: string): Promise<Category> {
+        return this.categoryService.findOneAnc(Number(id));
+    }
+
+    // @UseGuards(AuthGuard)
+    @Get('des/:id')
+    findOneDes(@Param('id') id: string): Promise<Category> {
+        return this.categoryService.findOneDes(Number(id));
     }
 
     @UseGuards(AuthGuard)

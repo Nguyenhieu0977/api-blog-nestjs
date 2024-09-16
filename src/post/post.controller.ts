@@ -102,6 +102,7 @@ export class PostController {
         return this.postService.delete(Number(id))
     }
 
+    @UseGuards(AuthGuard)
     @Delete('multiple')
     multipleDelete(@Query('ids', new ParseArrayPipe({ items: String, separator: ',' })) ids: string[]) {
         console.log("delete multi=> ", ids)
