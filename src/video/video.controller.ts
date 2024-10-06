@@ -106,7 +106,7 @@ export class VideoController {
       storage: storageConfig('video'),
       fileFilter: (req, file, cb) => {
         const ext = extname(file.originalname);
-        const allowedExtArr = ['.jpg', '.png', '.jpeg', '.mp4'];
+        const allowedExtArr = ['.jpg', '.png', '.jpeg', '.mp4', '.mkv'];
         if (!allowedExtArr.includes(ext)) {
           req.fileValidationError = `Wrong extension type. Accepted file ext are: ${allowedExtArr.toString()}`;
           cb(null, false);
@@ -128,7 +128,7 @@ export class VideoController {
     @Req() req: any,
     @Body() updateVideoDto: UpdateVideoDto,
     @UploadedFiles()
-    file: { thumbnail?: Express.Multer.File; url?: Express.Multer.File },
+    file: { thumbnail: Express.Multer.File; url: Express.Multer.File },
   ) {
     if (req.fileValidationError) {
       throw new BadRequestException(req.fileValidationError);
